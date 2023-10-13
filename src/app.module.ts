@@ -6,7 +6,6 @@ import { WishesModule } from "./wishes/wishes.module";
 import { WishlistsModule } from "./wishlists/wishlists.module";
 import { OffersModule } from "./offers/offers.module";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { User } from "./users/entities/user.entity";
 
 @Module({
   imports: [
@@ -21,7 +20,7 @@ import { User } from "./users/entities/user.entity";
       username: "student",
       password: "student",
       database: "nest_project",
-      entities: [User],
+      entities: ["dist/*/entities/*.entity.js"],
       schema: "nest_project",
       synchronize: true,
     }),
