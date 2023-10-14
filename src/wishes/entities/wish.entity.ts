@@ -1,6 +1,16 @@
 import { IsString, Length, IsUrl } from "class-validator";
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Wishlist } from "src/wishlists/entities/wishlist.entity";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToMany,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from "typeorm";
 
+//Список желаемых подарков
 @Entity()
 export class Wish {
   @PrimaryGeneratedColumn()
@@ -31,7 +41,7 @@ export class Wish {
 
   @Length(1, 1024)
   @IsString()
-  @Column()
+  @Column({ length: 1024 })
   description: string;
 
   @Column("simple-array")
@@ -39,4 +49,13 @@ export class Wish {
 
   @Column()
   copied: number;
+
+  @ManyToMany(() => Wishlist, (wishlist) => wishlist.id)
+  wishList: Wishlist[];
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

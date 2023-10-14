@@ -1,5 +1,15 @@
 import { IsNotEmpty, IsString, Length, IsEmail, IsUrl } from "class-validator";
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Offer } from "src/offers/entities/offer.entity";
+import { Wish } from "src/wishes/entities/wish.entity";
+import { Wishlist } from "src/wishlists/entities/wishlist.entity";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from "typeorm";
 
 @Entity()
 export class User {
@@ -10,7 +20,7 @@ export class User {
   @IsNotEmpty()
   @IsString()
   @Column({ unique: true })
-  usermame: string;
+  username: string;
 
   @Length(2, 200)
   @IsString()
@@ -31,12 +41,21 @@ export class User {
   @Column()
   password: string;
 
-  @Column()
-  wishes: string;
+  // список желаемых подарков
+  @OneToMany(() => Wish, (wish) => wish.id)
+  wish: string[];
 
-  @Column()
-  offers: string;
+  // содержит список подарков, на которые скидыватся пользователь
+  @OneToMany(() => Offer, (offer) => offer.id)
+  // offers: string;
 
-  @Column()
-  wishlists: string;
+  // список вишлистов, которые создал пользователь
+  @OneToMany(() => Wishlist, (wishlist) => wishlist.id)
+  wishlists: string[];
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }
