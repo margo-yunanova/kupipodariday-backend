@@ -41,21 +41,21 @@ export class User {
   @Column()
   password: string;
 
-  // список желаемых подарков
-  @OneToMany(() => Wish, (wish) => wish.id)
-  wish: string[];
-
-  // содержит список подарков, на которые скидыватся пользователь
-  @OneToMany(() => Offer, (offer) => offer.id)
-  // offers: string;
-
-  // список вишлистов, которые создал пользователь
-  @OneToMany(() => Wishlist, (wishlist) => wishlist.id)
-  wishlists: string[];
-
   @CreateDateColumn()
   createdAt: Date;
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  // список желаемых подарков
+  @OneToMany(() => Wish, (wish) => wish.id)
+  wishes: Wish[];
+
+  // содержит список подарков, на которые скидыватся пользователь
+  @OneToMany(() => Offer, (offer) => offer.id)
+  offers: Offer[];
+
+  // список вишлистов, которые создал пользователь
+  @OneToMany(() => Wishlist, (wishlist) => wishlist.id)
+  wishlists: Wishlist[];
 }

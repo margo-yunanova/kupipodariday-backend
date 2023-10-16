@@ -1,11 +1,13 @@
-import { IsString, Length, IsUrl } from "class-validator";
-import { Wishlist } from "src/wishlists/entities/wishlist.entity";
+import { IsString, Length, IsUrl, Min } from "class-validator";
+import { Offer } from "src/offers/entities/offer.entity";
+import { UserPublicProfileResponseDto } from "src/users/dto/user-public-profile-response.dto";
+import { User } from "src/users/entities/user.entity";
 import {
   Column,
   CreateDateColumn,
   Entity,
-  ManyToMany,
-  ManyToOne,
+  OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
@@ -15,6 +17,12 @@ import {
 export class Wish {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 
   @Length(1, 250)
   @IsString()
@@ -29,33 +37,26 @@ export class Wish {
   @Column()
   image: string;
 
+  @Min(1)
   @Column({ type: "decimal", precision: 2 })
   price: number;
 
+  @Min(1)
   @Column({ type: "decimal", precision: 2 })
   raised: number;
 
-  @IsUrl()
   @Column()
-  owner: string;
+  copied: number;
 
   @Length(1, 1024)
   @IsString()
   @Column({ length: 1024 })
   description: string;
 
-  @Column("simple-array")
-  offers: string[];
-
+  @OneToOne(() => User, (user) => user.id)
   @Column()
-  copied: number;
+  owner: UserPublicProfileResponseDto;
 
-  @ManyToMany(() => Wishlist, (wishlist) => wishlist.id)
-  wishList: Wishlist[];
-
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @UpdateDateColumn()
-  updatedAt: Date;
+  @OneToMany(() => Offer, (offer) => offer.id)
+  offers: Offer[];
 }
