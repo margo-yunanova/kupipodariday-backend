@@ -1,34 +1,57 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Headers,
+} from "@nestjs/common";
+import { UsersService } from "./users.service";
+import { UpdateUserDto } from "./dto/update-user.dto";
+import { FindUsersDto } from "./dto/find-users.dto";
 
-@Controller('users')
+@Controller("users")
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  // response UserProfileResponseDto
+  @Get("me")
+  getOwnProfile(@Headers("authorization") authorization: string) {
+    return this.usersService.findOne(authorization);
   }
 
-  @Get()
-  findAll() {
-    return this.usersService.findAll();
+  // response UserProfileResponseDto'
+  // '400': description: Ошибка валидации переданных значений
+  @Patch("me")
+  updateOwnProfile(
+    @Headers("authorization") authorization: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    return this.usersService.update(authorization, updateUserDto);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+  // response Wish[]
+  @Get("me/wishes")
+  getOwnWishes(@Headers("authorization") authorization: string) {
+    return this.usersService.getOwnWishes(authorization);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+  // response UserProfileResponseDto
+  @Post("find")
+  findUser(@Body() findUsersDto: FindUsersDto) {
+    return this.usersService.findUser(findUsersDto.query);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+  // response UserPublicProfileResponseDto
+  @Get(":username")
+  getUserByUsername(@Param("username") username: string) {
+    return this.usersService.findByUsername(username);
+  }
+
+  // response UserWishesDto[]
+  @Get(":username/wishes")
+  getWishesByUsername(@Param("username") username: string) {
+    return this.usersService.getUserWishes(username);
   }
 }
