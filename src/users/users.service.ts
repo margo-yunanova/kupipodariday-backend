@@ -36,8 +36,15 @@ export class UsersService {
     return user;
   }
 
-  update(authorization: string, updateUserDto: UpdateUserDto) {
-    return `This action updates a user`;
+  async updateUser(id: number, updateUserDto: UpdateUserDto) {
+    if (Object.hasOwn(updateUserDto, "password")) {
+      updateUserDto.password = await bcrypt.hash(
+        updateUserDto.password,
+        saltOrRounds,
+      );
+    }
+    const user = await this.userRepository.update(id, updateUserDto);
+    return user;
   }
 
   getOwnWishes(authorization: string) {

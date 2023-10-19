@@ -26,11 +26,11 @@ export class UsersController {
 
   // response UserProfileResponseDto'
   // '400': description: Ошибка валидации переданных значений
-  // @UseGuards(JwtAuthGuard)
-  // @Patch("me")
-  // updateOwnProfile(@Body() updateUserDto: UpdateUserDto) {
-  //   return this.usersService.update();
-  // }
+  @UseGuards(JwtAuthGuard)
+  @Patch("me")
+  updateOwnProfile(@Request() req, @Body() updateUserDto: UpdateUserDto) {
+    return this.usersService.updateUser(req.user.id, updateUserDto);
+  }
 
   // // response Wish[]
   // @UseGuards(JwtAuthGuard)
