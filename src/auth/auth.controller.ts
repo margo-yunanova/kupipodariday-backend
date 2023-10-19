@@ -18,7 +18,6 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post("signin")
   async signIn(@Request() req) {
-    console.log("AuthController signIn ", req.user);
     // метод получает имя и пароль из тела, а затем возвращает JWT токен если юзер аутентифицирован
     return this.authService.login(req.user);
   }

@@ -26,18 +26,18 @@ export class UsersController {
 
   // response UserProfileResponseDto'
   // '400': description: Ошибка валидации переданных значений
-  @UseGuards(JwtAuthGuard)
-  @Patch("me")
-  updateOwnProfile(@Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(updateUserDto);
-  }
+  // @UseGuards(JwtAuthGuard)
+  // @Patch("me")
+  // updateOwnProfile(@Body() updateUserDto: UpdateUserDto) {
+  //   return this.usersService.update();
+  // }
 
-  // response Wish[]
-  @UseGuards(JwtAuthGuard)
-  @Get("me/wishes")
-  getOwnWishes() {
-    return this.usersService.getOwnWishes();
-  }
+  // // response Wish[]
+  // @UseGuards(JwtAuthGuard)
+  // @Get("me/wishes")
+  // getOwnWishes() {
+  //   return this.usersService.getOwnWishes();
+  // }
 
   // response UserProfileResponseDto
   @Post("find")

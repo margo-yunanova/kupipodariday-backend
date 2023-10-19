@@ -26,7 +26,6 @@ Of course in a real application, you wouldn't store a password in plain text. Yo
     const isMatch = await bcrypt.compare(signInUserDto.password, user.password);
     if (isMatch) {
       const { password, ...result } = user;
-      console.log("AuthService validateUser", result);
       return result;
     }
 
