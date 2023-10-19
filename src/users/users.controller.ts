@@ -5,36 +5,38 @@ import {
   Body,
   Patch,
   Param,
-  Headers,
+  UseGuards,
+  Request,
 } from "@nestjs/common";
 import { UsersService } from "./users.service";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { FindUsersDto } from "./dto/find-users.dto";
+import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
 
 @Controller("users")
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   // response UserProfileResponseDto
+  @UseGuards(JwtAuthGuard)
   @Get("me")
-  getOwnProfile(@Headers("authorization") authorization: string) {
-    return this.usersService.findOne(authorization);
+  getOwnProfile(@Request() req) {
+    return req.user;
   }
 
   // response UserProfileResponseDto'
   // '400': description: Ошибка валидации переданных значений
+  @UseGuards(JwtAuthGuard)
   @Patch("me")
-  updateOwnProfile(
-    @Headers("authorization") authorization: string,
-    @Body() updateUserDto: UpdateUserDto,
-  ) {
-    return this.usersService.update(authorization, updateUserDto);
+  updateOwnProfile(@Body() updateUserDto: UpdateUserDto) {
+    return this.usersService.update(updateUserDto);
   }
 
   // response Wish[]
+  @UseGuards(JwtAuthGuard)
   @Get("me/wishes")
-  getOwnWishes(@Headers("authorization") authorization: string) {
-    return this.usersService.getOwnWishes(authorization);
+  getOwnWishes() {
+    return this.usersService.getOwnWishes();
   }
 
   // response UserProfileResponseDto

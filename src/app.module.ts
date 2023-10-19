@@ -28,6 +28,12 @@ import { AuthModule } from "./auth/auth.module";
     }),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: JwtAuthGuard,
+    // },
+  ],
 })
 export class AppModule {}

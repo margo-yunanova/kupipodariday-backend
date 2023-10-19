@@ -40,7 +40,7 @@ export class Wishlist {
 
   @Column()
   @OneToOne(() => User, (user) => user.id)
-  owner: UserPublicProfileResponseDto;
+  owner: number;
 
   @OneToMany(() => Wish, (wish) => wish.id)
   @Column("simple-array")

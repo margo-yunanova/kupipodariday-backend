@@ -55,7 +55,7 @@ export class Wish {
 
   @OneToOne(() => User, (user) => user.id)
   @Column()
-  owner: UserPublicProfileResponseDto;
+  owner: number;
 
   @OneToMany(() => Offer, (offer) => offer.id)
   offers: Offer[];

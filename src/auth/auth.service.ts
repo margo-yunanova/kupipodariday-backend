@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
-import { User } from "../users/entities/user.entity";
 import { JwtService } from "@nestjs/jwt";
+import * as bcrypt from "bcrypt";
+import { User } from "../users/entities/user.entity";
 import { UsersService } from "../users/users.service";
 import { SignInUserDto } from "./dto/signin-user.dto";
 
@@ -22,8 +23,10 @@ export class AuthService {
 Of course in a real application, you wouldn't store a password in plain text. You'd instead use a library like bcrypt, with a salted one-way hash algorithm. With that approach, you'd only store hashed passwords, and then compare the stored password to a hashed version of the incoming password, thus never storing or exposing user passwords in plain text. To keep our sample app simple, we violate that absolute mandate and use plain text. Don't do this in your real app!*/
   async validateUser(signInUserDto: SignInUserDto) {
     const user = await this.usersService.findByUsername(signInUserDto.username);
-    if (user.password === signInUserDto.password) {
+    const isMatch = await bcrypt.compare(signInUserDto.password, user.password);
+    if (isMatch) {
       const { password, ...result } = user;
+      console.log("AuthService validateUser", result);
       return result;
     }
 

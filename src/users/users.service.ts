@@ -1,10 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import * as bcrypt from "bcrypt";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { User } from "./entities/user.entity";
-import { Repository } from "typeorm";
-import { UserProfileDto } from "./dto/user-profile.dto";
+import { saltOrRounds } from "src/constants/constants";
 
 @Injectable()
 export class UsersService {
@@ -13,7 +14,14 @@ export class UsersService {
   ) {}
 
   async createUser(createUserDto: CreateUserDto) {
-    const userDTO = this.userRepository.create(createUserDto);
+    const hashPassword = await bcrypt.hash(
+      createUserDto.password,
+      saltOrRounds,
+    );
+    const userDTO = this.userRepository.create({
+      ...createUserDto,
+      password: hashPassword,
+    });
     const user = await this.userRepository.save(userDTO);
     return user;
   }
@@ -23,22 +31,8 @@ export class UsersService {
     return user;
   }
 
-  async findOne(authorization: string) {
-    //const token = authorization.slice(7);
-    const user = await this.userRepository.findOneBy({
-      id: 4,
-    });
-    return user;
-    //{
-    //   username: "margo",
-    //   about: "ляляля",
-    //   email: "test1@gmail.com",
-    //   password: "q@R3kY#rv3ZLu@S",
-    //   id: 4,
-    //   avatar: "https://i.pravatar.cc/300",
-    //   createdAt: "2023-10-16T13:54:03.613Z",
-    //   updatedAt: "2023-10-16T13:54:03.613Z",
-    // };
+  async findOne() {
+    return;
   }
 
   update(authorization: string, updateUserDto: UpdateUserDto) {
