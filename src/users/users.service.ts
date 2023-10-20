@@ -15,7 +15,7 @@ export class UsersService {
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
 
-  async createUser(createUserDto: CreateUserDto) {
+  async registerUser(createUserDto: CreateUserDto) {
     const hashPassword = await bcrypt.hash(
       createUserDto.password,
       saltOrRounds,
@@ -28,7 +28,7 @@ export class UsersService {
     return user;
   }
 
-  async findProfile(username: string): Promise<CreateUserDto> {
+  async findOwnProfile(username: string): Promise<CreateUserDto> {
     const user = await this.userRepository
       .createQueryBuilder("user")
       .where({ username })
@@ -42,7 +42,7 @@ export class UsersService {
     return user;
   }
 
-  async updateUser(id: number, updateUserDto: UpdateUserDto) {
+  async updateOwnProfile(id: number, updateUserDto: UpdateUserDto) {
     if (Object.hasOwn(updateUserDto, "password")) {
       updateUserDto.password = await bcrypt.hash(
         updateUserDto.password,
@@ -53,7 +53,7 @@ export class UsersService {
     return user;
   }
 
-  async findMany(query: string) {
+  async queryUser(query: string) {
     const users: UserProfileResponseDto[] = await this.userRepository.findBy([
       { username: Like(`%${query}%`) },
       { email: Like(`%${query}%`) },
@@ -62,7 +62,7 @@ export class UsersService {
     return users;
   }
 
-  async findByUsername(username: string) {
+  async getAnotherUser(username: string) {
     const user: UserPublicProfileResponseDto =
       await this.userRepository.findOneBy({ username });
     console.log(user);
@@ -73,7 +73,7 @@ export class UsersService {
     return `This action return user withes`;
   }
 
-  getUserWishes(authorization: string) {
+  getAnotherUserWishes(authorization: string) {
     return `This action return user withes`;
   }
 }

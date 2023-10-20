@@ -12,7 +12,7 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async login(user: User) {
+  async loginUser(user: User) {
     // Note: we choose a property name of sub to hold our userId value to be consistent with JWT standards.
     const payload = { username: user.username, sub: user.id };
     // sing - генерирует jwt из свойств user
@@ -20,7 +20,7 @@ export class AuthService {
   }
 
   async validateUser(signInUserDto: SignInUserDto) {
-    const user = await this.usersService.findProfile(signInUserDto.username);
+    const user = await this.usersService.findOwnProfile(signInUserDto.username);
     const isMatch = await bcrypt.compare(signInUserDto.password, user.password);
     if (isMatch) {
       const { password, ...result } = user;
