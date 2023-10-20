@@ -12,6 +12,12 @@ import { UsersService } from "./users.service";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { FindUsersDto } from "./dto/find-users.dto";
 import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
+import { Request as IRequest } from "express";
+import { UserProfileResponseDto } from "./dto/user-profile-response.dto";
+
+interface RequestWithUserProp extends IRequest {
+  user: UserProfileResponseDto;
+}
 
 @Controller("users")
 export class UsersController {
@@ -20,7 +26,7 @@ export class UsersController {
   // response UserProfileResponseDto
   @UseGuards(JwtAuthGuard)
   @Get("me")
-  getOwnProfile(@Request() req) {
+  getOwnProfile(@Request() req: RequestWithUserProp) {
     return req.user;
   }
 
@@ -32,7 +38,7 @@ export class UsersController {
     return this.usersService.updateUser(req.user.id, updateUserDto);
   }
 
-  // // response Wish[]
+  // // response Wish[]Entry
   // @UseGuards(JwtAuthGuard)
   // @Get("me/wishes")
   // getOwnWishes() {
@@ -40,20 +46,26 @@ export class UsersController {
   // }
 
   // response UserProfileResponseDto
+  @UseGuards(JwtAuthGuard)
   @Post("find")
   findUser(@Body() findUsersDto: FindUsersDto) {
-    return this.usersService.findUser(findUsersDto.query);
+    return this.usersService.findMany(findUsersDto.query);
   }
 
   // response UserPublicProfileResponseDto
+  @UseGuards(JwtAuthGuard)
   @Get(":username")
-  getUserByUsername(@Param("username") username: string) {
-    return this.usersService.findByUsername(username);
+  async getUserByUsername(@Param("username") username: string) {
+    const user = await this.usersService.findByUsername(username);
+    // console.log(user);
+    return user;
   }
 
   // response UserWishesDto[]
+  @UseGuards(JwtAuthGuard)
   @Get(":username/wishes")
-  getWishesByUsername(@Param("username") username: string) {
-    return this.usersService.getUserWishes(username);
+  async getWishesByUsername(@Param("username") username: string) {
+    const user = await this.usersService.getUserWishes(username);
+    return user;
   }
 }

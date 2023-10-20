@@ -1,11 +1,13 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { Like, Repository } from "typeorm";
 import * as bcrypt from "bcrypt";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { User } from "./entities/user.entity";
 import { saltOrRounds } from "src/constants/constants";
+import { UserProfileResponseDto } from "./dto/user-profile-response.dto";
+import { UserPublicProfileResponseDto } from "./dto/user-public-profile-response.dto";
 
 @Injectable()
 export class UsersService {
@@ -26,8 +28,12 @@ export class UsersService {
     return user;
   }
 
-  async findByUsername(username: string) {
-    const user = await this.userRepository.findOneBy({ username });
+  async findProfile(username: string): Promise<CreateUserDto> {
+    const user = await this.userRepository
+      .createQueryBuilder("user")
+      .where({ username })
+      .addSelect(["user.email", "user.password"])
+      .getOne();
     return user;
   }
 
@@ -47,15 +53,27 @@ export class UsersService {
     return user;
   }
 
+  async findMany(query: string) {
+    const users: UserProfileResponseDto[] = await this.userRepository.findBy([
+      { username: Like(`%${query}%`) },
+      { email: Like(`%${query}%`) },
+    ]);
+
+    return users;
+  }
+
+  async findByUsername(username: string) {
+    const user: UserPublicProfileResponseDto =
+      await this.userRepository.findOneBy({ username });
+    console.log(user);
+    return user;
+  }
+
   getOwnWishes(authorization: string) {
     return `This action return user withes`;
   }
 
   getUserWishes(authorization: string) {
     return `This action return user withes`;
-  }
-
-  findUser(query: string) {
-    return `This action removes a  user`;
   }
 }

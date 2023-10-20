@@ -33,12 +33,12 @@ export class User {
 
   @IsEmail()
   @IsNotEmpty()
-  @Column({ unique: true })
+  @Column({ unique: true, select: false })
   email: string;
 
   @IsNotEmpty()
   @IsString()
-  @Column()
+  @Column({ select: false })
   password: string;
 
   @CreateDateColumn()
