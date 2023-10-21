@@ -53,7 +53,7 @@ export class UsersService {
     return user;
   }
 
-  async queryUser(query: string) {
+  async findMany(query: string) {
     const users: UserProfileResponseDto[] = await this.userRepository.findBy([
       { username: Like(`%${query}%`) },
       { email: Like(`%${query}%`) },
@@ -62,7 +62,7 @@ export class UsersService {
     return users;
   }
 
-  async getAnotherUser(username: string) {
+  async getUser(username: string) {
     const user: UserPublicProfileResponseDto =
       await this.userRepository.findOneBy({ username });
     console.log(user);
@@ -73,7 +73,7 @@ export class UsersService {
     return `This action return user withes`;
   }
 
-  getAnotherUserWishes(authorization: string) {
+  getUserWishes(authorization: string) {
     return `This action return user withes`;
   }
 }

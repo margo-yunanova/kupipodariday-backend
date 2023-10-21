@@ -48,15 +48,15 @@ export class UsersController {
   // response UserProfileResponseDto
   @UseGuards(JwtAuthGuard)
   @Post("find")
-  queryUser(@Body() findUsersDto: FindUsersDto) {
-    return this.usersService.queryUser(findUsersDto.query);
+  findMany(@Body() findUsersDto: FindUsersDto) {
+    return this.usersService.findMany(findUsersDto.query);
   }
 
   // response UserPublicProfileResponseDto
   @UseGuards(JwtAuthGuard)
   @Get(":username")
-  async getAnotherUser(@Param("username") username: string) {
-    const user = await this.usersService.getAnotherUser(username);
+  async getUser(@Param("username") username: string) {
+    const user = await this.usersService.getUser(username);
     // console.log(user);
     return user;
   }
@@ -64,8 +64,8 @@ export class UsersController {
   // response UserWishesDto[]
   @UseGuards(JwtAuthGuard)
   @Get(":username/wishes")
-  async getAnotherUserWishes(@Param("username") username: string) {
-    const user = await this.usersService.getAnotherUserWishes(username);
+  async getUserWishes(@Param("username") username: string) {
+    const user = await this.usersService.getUserWishes(username);
     return user;
   }
 }
