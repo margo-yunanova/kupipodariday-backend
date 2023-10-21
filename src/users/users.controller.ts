@@ -34,16 +34,24 @@ export class UsersController {
   // '400': description: Ошибка валидации переданных значений
   @UseGuards(JwtAuthGuard)
   @Patch("me")
-  updateOwnProfile(@Request() req, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.updateOwnProfile(req.user.id, updateUserDto);
+  async updateOwnProfile(
+    @Request() req: RequestOwnUser,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    const user = await this.usersService.updateOwnProfile(
+      req.user.id,
+      updateUserDto,
+    );
+
+    return user;
   }
 
-  // // response Wish[]Entry
-  // @UseGuards(JwtAuthGuard)
-  // @Get("me/wishes")
-  // getOwnWishes() {
-  //   return this.usersService.getOwnWishes();
-  // }
+  // response Wish[]Entry
+  @UseGuards(JwtAuthGuard)
+  @Get("me/wishes")
+  async getOwnWishes(@Request() req: RequestOwnUser) {
+    return await this.usersService.getOwnWishes(req.user.id);
+  }
 
   // response UserProfileResponseDto
   @UseGuards(JwtAuthGuard)
@@ -57,7 +65,6 @@ export class UsersController {
   @Get(":username")
   async getUser(@Param("username") username: string) {
     const user = await this.usersService.getUser(username);
-    // console.log(user);
     return user;
   }
 

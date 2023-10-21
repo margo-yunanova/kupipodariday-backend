@@ -8,11 +8,13 @@ import { User } from "./entities/user.entity";
 import { saltOrRounds } from "src/constants/constants";
 import { UserProfileResponseDto } from "./dto/user-profile-response.dto";
 import { UserPublicProfileResponseDto } from "./dto/user-public-profile-response.dto";
+import { Wish } from "src/wishes/entities/wish.entity";
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
+    @InjectRepository(Wish) private wishRepository: Repository<Wish>,
   ) {}
 
   async registerUser(createUserDto: CreateUserDto) {
@@ -28,8 +30,8 @@ export class UsersService {
     return user;
   }
 
-  async findOwnProfile(username: string): Promise<CreateUserDto> {
-    const user = await this.userRepository
+  async findOwnProfile(username: string) {
+    const user: CreateUserDto = await this.userRepository
       .createQueryBuilder("user")
       .where({ username })
       .addSelect(["user.email", "user.password"])
@@ -38,7 +40,9 @@ export class UsersService {
   }
 
   async findById(id: number) {
-    const user = await this.userRepository.findOneBy({ id });
+    const user: UserProfileResponseDto = await this.userRepository.findOneBy({
+      id,
+    });
     return user;
   }
 
@@ -49,15 +53,28 @@ export class UsersService {
         saltOrRounds,
       );
     }
-    const user = await this.userRepository.update(id, updateUserDto);
+
+    await this.userRepository.update(id, updateUserDto);
+    const user: UserProfileResponseDto = await this.userRepository
+      .createQueryBuilder("user")
+      .where({ id })
+      .addSelect("user.email")
+      .getOne();
+
     return user;
   }
 
+  async getOwnWishes(id: number) {
+    const wishes: Wish[] = await this.wishRepository.findBy({ owner: id });
+    return wishes;
+  }
+
   async findMany(query: string) {
-    const users: UserProfileResponseDto[] = await this.userRepository.findBy([
-      { username: Like(`%${query}%`) },
-      { email: Like(`%${query}%`) },
-    ]);
+    const users: UserPublicProfileResponseDto[] =
+      await this.userRepository.findBy([
+        { username: Like(`%${query}%`) },
+        { email: Like(`%${query}%`) },
+      ]);
 
     return users;
   }
@@ -65,15 +82,13 @@ export class UsersService {
   async getUser(username: string) {
     const user: UserPublicProfileResponseDto =
       await this.userRepository.findOneBy({ username });
-    console.log(user);
     return user;
   }
 
-  getOwnWishes(authorization: string) {
-    return `This action return user withes`;
-  }
-
-  getUserWishes(authorization: string) {
-    return `This action return user withes`;
+  async getUserWishes(username: string) {
+    const user: UserPublicProfileResponseDto =
+      await this.userRepository.findOneBy({ username });
+    const wishes: Wish[] = await this.wishRepository.findBy({ owner: user.id });
+    return wishes;
   }
 }
