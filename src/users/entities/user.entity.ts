@@ -48,7 +48,7 @@ export class User {
   updatedAt: Date;
 
   // список желаемых подарков
-  @OneToMany(() => Wish, (wish) => wish.id)
+  @OneToMany(() => Wish, (wish) => wish.owner)
   wishes: Wish[];
 
   // содержит список подарков, на которые скидыватся пользователь

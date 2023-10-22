@@ -65,7 +65,7 @@ export class UsersService {
   }
 
   async getOwnWishes(id: number) {
-    const wishes: Wish[] = await this.wishRepository.findBy({ owner: id });
+    const wishes: Wish[] = await this.wishRepository.findBy({ owner: { id } });
     return wishes;
   }
 
@@ -88,7 +88,9 @@ export class UsersService {
   async getUserWishes(username: string) {
     const user: UserPublicProfileResponseDto =
       await this.userRepository.findOneBy({ username });
-    const wishes: Wish[] = await this.wishRepository.findBy({ owner: user.id });
+    const wishes: Wish[] = await this.wishRepository.findBy({
+      owner: { id: user.id },
+    });
     return wishes;
   }
 }

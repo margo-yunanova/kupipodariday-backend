@@ -15,7 +15,7 @@ import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
 import { Request as IRequest } from "express";
 import { UserProfileResponseDto } from "./dto/user-profile-response.dto";
 
-interface RequestOwnUser extends IRequest {
+export interface RequestOwnUser extends IRequest {
   user: UserProfileResponseDto;
 }
 
