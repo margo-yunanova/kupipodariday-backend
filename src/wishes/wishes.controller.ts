@@ -6,47 +6,69 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
+  Request,
 } from "@nestjs/common";
 import { WishesService } from "./wishes.service";
 import { CreateWishDto } from "./dto/create-wish.dto";
 import { UpdateWishDto } from "./dto/update-wish.dto";
+import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
+import { RequestOwnUser } from "src/users/users.controller";
+import { Wish } from "./entities/wish.entity";
 
 @Controller("wishes")
 export class WishesController {
   constructor(private readonly wishesService: WishesService) {}
 
-  // response схемы видимо нет
+  @UseGuards(JwtAuthGuard)
   @Post()
-  getWishes(@Body() createWishDto: CreateWishDto) {
-    return this.wishesService.create(createWishDto);
+  async createWish(
+    @Request() req: RequestOwnUser,
+    @Body() createWishDto: CreateWishDto,
+  ): Promise<Record<string, never>> {
+    await this.wishesService.createWish(createWishDto, req.user.id);
+    return {};
   }
 
-  // response Wish[]
   @Get("last")
-  getLastWish() {}
-  Wish;
+  async findLastWish(): Promise<Wish[]> {
+    return await this.wishesService.findLastWishes();
+  }
 
-  // response Wish[]
   @Get("top")
-  getTopWishes() {}
+  async findTopWishes(): Promise<Wish[]> {
+    return await this.wishesService.findTopWishes();
+  }
 
-  // response Wish
   // swagger: id: number
+  @UseGuards(JwtAuthGuard)
   @Get(":id")
-  getWishById(@Param("id") id: string) {}
+  async findWishById(@Param("id") id: string): Promise<Wish> {
+    return await this.wishesService.findWishById(+id);
+  }
 
-  // response видимо ничего
   // swagger: id: number
+  @UseGuards(JwtAuthGuard)
   @Patch(":id")
-  updateWishById(
+  async updateWishById(
+    @Request() req: RequestOwnUser,
     @Param("id") id: string,
     @Body() updateWishDto: UpdateWishDto,
-  ) {}
+  ): Promise<Record<string, never>> {
+    await this.wishesService.updateWishById(req.user.id, +id, updateWishDto);
+    return {};
+  }
 
   // response Wish
   // swagger: id: number
+  @UseGuards(JwtAuthGuard)
   @Delete(":id")
-  deleteWishById(@Param("id") id: string) {}
+  async removeWishById(
+    @Request() req: RequestOwnUser,
+    @Param("id") id: string,
+  ): Promise<Wish> {
+    return await this.wishesService.removeWishById(req.user.id, +id);
+  }
 
   // response пустой объект
   // swagger: id: number

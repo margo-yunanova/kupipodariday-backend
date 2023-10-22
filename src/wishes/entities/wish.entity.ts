@@ -1,13 +1,12 @@
 import { IsString, Length, IsUrl, Min } from "class-validator";
 import { Offer } from "src/offers/entities/offer.entity";
-import { UserPublicProfileResponseDto } from "src/users/dto/user-public-profile-response.dto";
 import { User } from "src/users/entities/user.entity";
 import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
@@ -38,14 +37,13 @@ export class Wish {
   image: string;
 
   @Min(1)
-  @Column({ type: "decimal", precision: 2 })
+  @Column({ type: "decimal", precision: 10, scale: 2 })
   price: number;
 
-  @Min(1)
-  @Column({ type: "decimal", precision: 2 })
+  @Column({ type: "decimal", precision: 10, scale: 2, default: 0 })
   raised: number;
 
-  @Column()
+  @Column({ type: "decimal", precision: 10, scale: 2, default: 0 })
   copied: number;
 
   @Length(1, 1024)
@@ -53,9 +51,8 @@ export class Wish {
   @Column({ length: 1024 })
   description: string;
 
-  @OneToOne(() => User, (user) => user.id)
-  @Column()
-  owner: number;
+  @ManyToOne(() => User, (user) => user.wishes)
+  owner: User;
 
   @OneToMany(() => Offer, (offer) => offer.id)
   offers: Offer[];
