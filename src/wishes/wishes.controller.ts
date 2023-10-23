@@ -59,7 +59,6 @@ export class WishesController {
     return {};
   }
 
-  // response Wish
   // swagger: id: number
   @UseGuards(JwtAuthGuard)
   @Delete(":id")
@@ -70,8 +69,14 @@ export class WishesController {
     return await this.wishesService.removeWishById(req.user.id, +id);
   }
 
-  // response пустой объект
   // swagger: id: number
+  @UseGuards(JwtAuthGuard)
   @Post(":id/copy")
-  copyWithById(@Param("id") id: string) {}
+  async copyWithById(
+    @Request() req: RequestOwnUser,
+    @Param("id") id: string,
+  ): Promise<Record<string, never>> {
+    await this.wishesService.copyWithById(req.user.id, +id);
+    return {};
+  }
 }

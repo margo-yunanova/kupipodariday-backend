@@ -79,4 +79,21 @@ export class WishesService {
     });
     return removedWish;
   }
+
+  // TODO можно ли добавить себе в вишлист один подарок дважды?
+  async copyWithById(ownerId: number, wishId: number) {
+    const { id, name, link, image, price, description } =
+      await this.wishRepository.findOneBy({ id: wishId });
+    if (ownerId !== id) {
+      const createWishDto: CreateWishDto = {
+        name,
+        link,
+        image,
+        price,
+        description,
+      };
+      await this.createWish(createWishDto, ownerId);
+      await this.wishRepository.increment({ id }, "copied", 1);
+    }
+  }
 }

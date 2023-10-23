@@ -43,7 +43,7 @@ export class Wish {
   @Column({ type: "decimal", precision: 10, scale: 2, default: 0 })
   raised: number;
 
-  @Column({ type: "decimal", precision: 10, scale: 2, default: 0 })
+  @Column({ default: 0 })
   copied: number;
 
   @Length(1, 1024)
