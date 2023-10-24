@@ -52,7 +52,7 @@ export class User {
   wishes: Wish[];
 
   // содержит список подарков, на которые скидыватся пользователь
-  @OneToMany(() => Offer, (offer) => offer.id)
+  @OneToMany(() => Offer, (offer) => offer.user)
   offers: Offer[];
 
   // список вишлистов, которые создал пользователь

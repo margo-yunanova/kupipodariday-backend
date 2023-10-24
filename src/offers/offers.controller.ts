@@ -1,26 +1,41 @@
-import { Controller, Get, Post, Body, Param } from "@nestjs/common";
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  UseGuards,
+  Request,
+} from "@nestjs/common";
 import { OffersService } from "./offers.service";
 import { CreateOfferDto } from "./dto/create-offer.dto";
+import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
+import { RequestOwnUser } from "src/users/users.controller";
+import { Offer } from "./entities/offer.entity";
 
 @Controller("offers")
 export class OffersController {
   constructor(private readonly offersService: OffersService) {}
 
-  // response видимо ничего {}
+  @UseGuards(JwtAuthGuard)
   @Post()
-  createOffer(@Body() createOfferDto: CreateOfferDto) {
-    return this.offersService.create(createOfferDto);
+  async createOffer(
+    @Request() req: RequestOwnUser,
+    @Body() createOfferDto: CreateOfferDto,
+  ): Promise<Record<string, never>> {
+    await this.offersService.createOffer(req.user, createOfferDto);
+    return {};
   }
 
-  // response Offer[]
+  @UseGuards(JwtAuthGuard)
   @Get()
-  getOffers() {
-    return this.offersService.findAll();
+  async getOffers(): Promise<Offer[]> {
+    return await this.offersService.getOffers();
   }
 
-  //response Offer
+  @UseGuards(JwtAuthGuard)
   @Get(":id")
-  getOfferById(@Param("id") id: string) {
-    return this.offersService.findOne(+id);
+  async getOfferById(@Param("id") id: string): Promise<Offer> {
+    return await this.offersService.getOfferById(+id);
   }
 }
