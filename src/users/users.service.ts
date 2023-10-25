@@ -46,6 +46,7 @@ export class UsersService {
     return user;
   }
 
+  // TODO update не проверяет существует ли сущность.
   async updateOwnProfile(id: number, updateUserDto: UpdateUserDto) {
     if (Object.hasOwn(updateUserDto, "password")) {
       updateUserDto.password = await bcrypt.hash(

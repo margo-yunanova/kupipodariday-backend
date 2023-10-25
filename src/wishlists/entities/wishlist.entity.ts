@@ -1,14 +1,12 @@
 import { IsString, IsUrl, Length } from "class-validator";
-import { UserPublicProfileResponseDto } from "src/users/dto/user-public-profile-response.dto";
 import { User } from "src/users/entities/user.entity";
 import { Wish } from "src/wishes/entities/wish.entity";
-import { WishPartial } from "src/wishes/entities/wish-partial.entity";
 import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
@@ -31,18 +29,16 @@ export class Wishlist {
 
   @IsString()
   @Length(0, 1500)
-  @Column()
+  @Column({ nullable: true })
   description: string;
 
   @IsUrl()
   @Column()
   image: string;
 
-  @Column()
-  @OneToOne(() => User, (user) => user.id)
-  owner: number;
-
-  @OneToMany(() => Wish, (wish) => wish.id)
-  @Column("simple-array")
-  items: WishPartial[];
+  @ManyToOne(() => User, (user) => user.wishlists)
+  owner: User;
+  // TODO поменять связь
+  @OneToMany(() => Wish, (wish) => wish.wishlist)
+  items: Wish[];
 }

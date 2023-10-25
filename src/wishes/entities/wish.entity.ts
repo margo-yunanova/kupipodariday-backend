@@ -1,6 +1,7 @@
 import { IsString, Length, IsUrl, Min } from "class-validator";
 import { Offer } from "src/offers/entities/offer.entity";
 import { User } from "src/users/entities/user.entity";
+import { Wishlist } from "src/wishlists/entities/wishlist.entity";
 import {
   Column,
   CreateDateColumn,
@@ -56,4 +57,7 @@ export class Wish {
 
   @OneToMany(() => Offer, (offer) => offer.item)
   offers: Offer[];
+
+  @ManyToOne(() => Wishlist, (wishlist) => wishlist.items)
+  wishlist: Wishlist;
 }

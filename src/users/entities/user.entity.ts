@@ -56,6 +56,6 @@ export class User {
   offers: Offer[];
 
   // список вишлистов, которые создал пользователь
-  @OneToMany(() => Wishlist, (wishlist) => wishlist.id)
+  @OneToMany(() => Wishlist, (wishlist) => wishlist.owner)
   wishlists: Wishlist[];
 }
