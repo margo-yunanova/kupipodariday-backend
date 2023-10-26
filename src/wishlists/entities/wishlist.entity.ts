@@ -5,8 +5,9 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
-  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
@@ -38,7 +39,8 @@ export class Wishlist {
 
   @ManyToOne(() => User, (user) => user.wishlists)
   owner: User;
-  // TODO поменять связь
-  @OneToMany(() => Wish, (wish) => wish.wishlist)
+
+  @ManyToMany(() => Wish, (wish) => wish.wishlist)
+  @JoinTable()
   items: Wish[];
 }

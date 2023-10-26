@@ -6,6 +6,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToMany,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -58,6 +59,6 @@ export class Wish {
   @OneToMany(() => Offer, (offer) => offer.item)
   offers: Offer[];
 
-  @ManyToOne(() => Wishlist, (wishlist) => wishlist.items)
+  @ManyToMany(() => Wishlist, (wishlist) => wishlist.items)
   wishlist: Wishlist;
 }

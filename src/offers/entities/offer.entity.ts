@@ -1,7 +1,13 @@
-import { IsDate } from "class-validator";
 import { User } from "src/users/entities/user.entity";
 import { Wish } from "src/wishes/entities/wish.entity";
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from "typeorm";
 
 @Entity()
 export class Offer {
@@ -14,10 +20,10 @@ export class Offer {
   @Column({ default: false })
   hidden: boolean;
 
-  @IsDate()
+  @CreateDateColumn()
   createdAt: Date;
 
-  @IsDate()
+  @UpdateDateColumn()
   updatedAt: Date;
 
   @ManyToOne(() => Wish, (wish) => wish.offers)

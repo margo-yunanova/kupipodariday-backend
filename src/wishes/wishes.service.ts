@@ -1,9 +1,14 @@
-import { Injectable } from "@nestjs/common";
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
 import { CreateWishDto } from "./dto/create-wish.dto";
 import { UpdateWishDto } from "./dto/update-wish.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Wish } from "./entities/wish.entity";
+import { UserProfileResponseDto } from "src/users/dto/user-profile-response.dto";
 
 @Injectable()
 export class WishesService {
@@ -42,41 +47,66 @@ export class WishesService {
     return wishes;
   }
 
+  // BUG ТЗ: В описании схемы user - ссылка на сущность User, в примере схемы user: string, идентификатор username во фронтенде name
   async findWishById(wishId: number) {
     const wish: Wish = await this.wishRepository.findOne({
       where: { id: +wishId },
       relations: {
         owner: true,
-        //offers: true,
+        offers: {
+          user: true,
+        },
       },
     });
-    return wish;
+
+    if (!wish) throw new NotFoundException("такого подарка не существует");
+
+    const { offers, ...partialWish } = wish;
+
+    const offersResponse = offers.map((offer) => {
+      const { user, ...rest } = offer;
+      return {
+        ...rest,
+        name: user.username,
+      };
+    });
+
+    return { ...partialWish, offers: offersResponse };
   }
 
-  /* TODO  Не забудьте про ограничения на редактирование и удаление «хотелок»:
-  нельзя изменять или удалять чужие «хотелки», а также изменять стоимость,
-  если уже есть желающие скинуться.*/
+  /* BUG ТЗ: во фронтенде вообще не нашла никакого функционала по редактированию подарков*/
 
   async updateWishById(
-    ownerId: number,
+    user: UserProfileResponseDto,
     wishId: number,
     updateWishDto: UpdateWishDto,
   ) {
-    await this.wishRepository.update(
-      { owner: { id: ownerId }, id: wishId },
+    const { affected } = await this.wishRepository.update(
+      { owner: { id: user.id }, id: wishId, raised: 0 },
       updateWishDto,
     );
+
+    if (!affected)
+      throw new BadRequestException(
+        "Либо это не ваш подарок, либо уже есть поддержавшие",
+      );
   }
 
-  async removeWishById(ownerId: number, wishId: number) {
+  async removeWishById(user: UserProfileResponseDto, wishId: number) {
     const removedWish = await this.wishRepository.findOne({
-      where: { owner: { id: ownerId }, id: wishId },
+      where: { owner: { id: user.id }, id: wishId, raised: 0 },
     });
 
+    if (!removedWish)
+      throw new BadRequestException(
+        "Либо это не ваш подарок, либо уже есть поддержавшие",
+      );
+
     await this.wishRepository.delete({
-      owner: { id: ownerId },
+      owner: { id: user.id },
       id: wishId,
     });
+
     return removedWish;
   }
 
