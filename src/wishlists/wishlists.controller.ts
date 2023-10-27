@@ -48,7 +48,7 @@ export class WishlistsController {
     return await this.wishlistsService.getWishlist(req.user, +id);
   }
 
-  // // id swagger type number
+  // id swagger type number
   @UseGuards(JwtAuthGuard)
   @Patch(":id")
   async updateWishlist(

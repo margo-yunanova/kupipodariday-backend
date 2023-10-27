@@ -25,6 +25,7 @@ import { AuthModule } from "./auth/auth.module";
       entities: ["dist/*/entities/*.entity.js"],
       schema: "nest_project",
       synchronize: true,
+      //logging: true,
     }),
   ],
   controllers: [AppController],

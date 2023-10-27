@@ -41,11 +41,10 @@ export class WishesController {
   }
 
   // swagger: id: number
-  // ! причина отсутствия типа возвращаемого значения в wishesService.findWishById
   @UseGuards(JwtAuthGuard)
   @Get(":id")
-  async findWishById(@Param("id") id: string) {
-    return await this.wishesService.findWishById(+id);
+  async findWishById(@Request() req: RequestOwnUser, @Param("id") id: string) {
+    return await this.wishesService.findWishById(req.user, +id);
   }
 
   // swagger: id: number
@@ -77,7 +76,7 @@ export class WishesController {
     @Request() req: RequestOwnUser,
     @Param("id") id: string,
   ): Promise<Record<string, never>> {
-    await this.wishesService.copyWithById(req.user.id, +id);
+    await this.wishesService.copyWithById(req.user, +id);
     return {};
   }
 }

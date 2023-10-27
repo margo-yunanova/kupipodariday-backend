@@ -37,10 +37,11 @@ export class Wishlist {
   @Column()
   image: string;
 
+  // BUG ТЗ в схеме описании нет данного свойства, только в swagger
   @ManyToOne(() => User, (user) => user.wishlists)
   owner: User;
 
-  @ManyToMany(() => Wish, (wish) => wish.wishlist)
+  @ManyToMany(() => Wish, (wish) => wish.wishlists)
   @JoinTable()
   items: Wish[];
 }

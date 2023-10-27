@@ -51,7 +51,7 @@ export class User {
   @OneToMany(() => Wish, (wish) => wish.owner)
   wishes: Wish[];
 
-  // содержит список подарков, на которые скидыватся пользователь
+  // содержит список подарков, на которые скидывается пользователь
   @OneToMany(() => Offer, (offer) => offer.user)
   offers: Offer[];
 

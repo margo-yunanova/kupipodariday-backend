@@ -40,15 +40,9 @@ export class WishlistsService {
       relations: { owner: true, items: true },
     });
 
-    if (!wishlist)
-      throw new BadRequestException(
-        "Либо это не ваш вишлист, либо вишлиста не существует",
-      );
-
     return wishlist;
   }
 
-  // TODO проверять мой это вишлист или нет?
   async updateWishlist(
     user: UserProfileResponseDto,
     wishlistId: number,
@@ -63,19 +57,24 @@ export class WishlistsService {
       wishlist["items"] = wishes;
     }
     const { affected } = await this.wishListRepository.update(
-      { id: wishlistId, owner: user },
+      { id: wishlistId, owner: { id: user.id } },
       wishlist,
     );
 
-    if (!affected || affected === undefined)
-      throw new BadRequestException("Такого вишлиста не сущестует");
+    if (!affected)
+      throw new BadRequestException(
+        "Такого вишлиста не существует, или это не ваш вишлист",
+      );
 
     return await this.wishListRepository.findOneBy({ id: wishlistId });
   }
-  // TODO почистить вишлисты у подарков
+
   async removeWishlist(user: UserProfileResponseDto, wishlistId: number) {
     const removedWishlist = await this.getWishlist(user, wishlistId);
-    console.log(removedWishlist);
+
+    if (!removedWishlist)
+      throw new BadRequestException("Либо это не ваш вишлист");
+
     await this.wishListRepository.delete({
       owner: { id: user.id },
       id: wishlistId,

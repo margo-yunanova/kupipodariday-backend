@@ -6,7 +6,6 @@ import { AuthService } from "./auth.service";
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
   constructor(private authService: AuthService) {
-    // установка опция для специфической стратегии, например, для jwt стратегии можно предоставить secret to sign tokens
     super();
   }
 
@@ -19,7 +18,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
   async validate(username: string, password: string) {
     const user = await this.authService.validateUser({ username, password });
     if (!user) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException("Некорректная пара логин и пароль");
     }
     return user;
   }

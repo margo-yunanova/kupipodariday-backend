@@ -50,7 +50,7 @@ export class Wish {
 
   @Length(1, 1024)
   @IsString()
-  @Column({ length: 1024 })
+  @Column()
   description: string;
 
   @ManyToOne(() => User, (user) => user.wishes)
@@ -59,6 +59,8 @@ export class Wish {
   @OneToMany(() => Offer, (offer) => offer.item)
   offers: Offer[];
 
-  @ManyToMany(() => Wishlist, (wishlist) => wishlist.items)
-  wishlist: Wishlist;
+  @ManyToMany(() => Wishlist, (wishlist) => wishlist.items, {
+    onDelete: "CASCADE",
+  })
+  wishlists: Wishlist[];
 }

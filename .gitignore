@@ -1,3 +1,2 @@
 node_modules
-test
-src/app.controller.spec.ts
+dist

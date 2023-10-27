@@ -47,8 +47,12 @@ export class WishesService {
     return wishes;
   }
 
-  // BUG ТЗ: В описании схемы user - ссылка на сущность User, в примере схемы user: string, идентификатор username во фронтенде name
-  async findWishById(wishId: number) {
+  /* BUG ТЗ: В описании схемы user - ссылка на сущность User,
+  в примере схемы user: string, идентификатор username во фронтенде name
+  В разделе описания просмотра информации о подарков описание сильно расходится со схемой.
+  Если скрывать сумму вклада если пользователь выставил hidden: true на фронтенде отображается undefined
+  */
+  async findWishById(user: UserProfileResponseDto, wishId: number) {
     const wish: Wish = await this.wishRepository.findOne({
       where: { id: +wishId },
       relations: {
@@ -92,6 +96,7 @@ export class WishesService {
       );
   }
 
+  // BUG ТЗ: по схеме нужно возвращать объект с типом подарок, ситуация странная
   async removeWishById(user: UserProfileResponseDto, wishId: number) {
     const removedWish = await this.wishRepository.findOne({
       where: { owner: { id: user.id }, id: wishId, raised: 0 },
@@ -110,20 +115,27 @@ export class WishesService {
     return removedWish;
   }
 
-  // TODO можно ли добавить себе в вишлист один подарок дважды?
-  async copyWithById(ownerId: number, wishId: number) {
-    const { id, name, link, image, price, description } =
-      await this.wishRepository.findOneBy({ id: wishId });
-    if (ownerId !== id) {
-      const createWishDto: CreateWishDto = {
-        name,
-        link,
-        image,
-        price,
-        description,
-      };
-      await this.createWish(createWishDto, ownerId);
-      await this.wishRepository.increment({ id }, "copied", 1);
-    }
+  /* BUG ТЗ не описаны условиям по которым можно копировать подарок.
+  Судя по фронтенду свой подарок скопировать нельзя */
+  async copyWithById(user: UserProfileResponseDto, wishId: number) {
+    const { id, name, link, image, price, description, owner } =
+      await this.wishRepository.findOne({
+        where: { id: wishId },
+        relations: { owner: true },
+      });
+
+    if (user.id === owner.id)
+      throw new BadRequestException("свой подарок скопировать нельзя");
+
+    const createWishDto: CreateWishDto = {
+      name,
+      link,
+      image,
+      price,
+      description,
+    };
+
+    await this.createWish(createWishDto, user.id);
+    await this.wishRepository.increment({ id }, "copied", 1);
   }
 }

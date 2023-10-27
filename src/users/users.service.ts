@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { ConflictException, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Like, Repository } from "typeorm";
 import * as bcrypt from "bcrypt";
@@ -18,19 +18,31 @@ export class UsersService {
   ) {}
 
   async registerUser(createUserDto: CreateUserDto) {
+    const isUserExist = await this.userRepository.findBy([
+      { username: createUserDto.username },
+      { email: createUserDto.email },
+    ]);
+
+    if (isUserExist.length > 0)
+      throw new ConflictException(
+        "Пользователь с таким email или username уже зарегистрирован",
+      );
+
     const hashPassword = await bcrypt.hash(
       createUserDto.password,
       saltOrRounds,
     );
-    const userDTO = this.userRepository.create({
+
+    const userDTO = {
       ...createUserDto,
       password: hashPassword,
-    });
+    };
+
     const user = await this.userRepository.save(userDTO);
     return user;
   }
 
-  async findOwnProfile(username: string) {
+  async findOwnProfile(username: string): Promise<CreateUserDto> {
     const user: CreateUserDto = await this.userRepository
       .createQueryBuilder("user")
       .where({ username })
@@ -46,7 +58,6 @@ export class UsersService {
     return user;
   }
 
-  // TODO update не проверяет существует ли сущность.
   async updateOwnProfile(id: number, updateUserDto: UpdateUserDto) {
     if (Object.hasOwn(updateUserDto, "password")) {
       updateUserDto.password = await bcrypt.hash(
