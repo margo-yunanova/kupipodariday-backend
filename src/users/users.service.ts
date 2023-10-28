@@ -51,14 +51,26 @@ export class UsersService {
     return user;
   }
 
-  async findById(id: number) {
+  async findById(userId: number) {
     const user: UserProfileResponseDto = await this.userRepository.findOneBy({
-      id,
+      id: userId,
     });
     return user;
   }
 
-  async updateOwnProfile(id: number, updateUserDto: UpdateUserDto) {
+  async updateOwnProfile(userId: number, updateUserDto: UpdateUserDto) {
+    const users = await this.userRepository.findBy([
+      { username: updateUserDto.username },
+      { email: updateUserDto.email },
+    ]);
+
+    for (const user of users) {
+      if (user.id !== userId)
+        throw new ConflictException(
+          "Пользователь с таким логином или email уже зарегистрирован",
+        );
+    }
+
     if (Object.hasOwn(updateUserDto, "password")) {
       updateUserDto.password = await bcrypt.hash(
         updateUserDto.password,
@@ -66,18 +78,20 @@ export class UsersService {
       );
     }
 
-    await this.userRepository.update(id, updateUserDto);
+    await this.userRepository.update(userId, updateUserDto);
     const user: UserProfileResponseDto = await this.userRepository
       .createQueryBuilder("user")
-      .where({ id })
+      .where({ id: userId })
       .addSelect("user.email")
       .getOne();
 
     return user;
   }
 
-  async getOwnWishes(id: number) {
-    const wishes: Wish[] = await this.wishRepository.findBy({ owner: { id } });
+  async getOwnWishes(userId: number) {
+    const wishes: Wish[] = await this.wishRepository.findBy({
+      owner: { id: userId },
+    });
     return wishes;
   }
 

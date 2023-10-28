@@ -20,7 +20,6 @@ export class CreateUserDto extends CreateWishDto {
   @IsNumber()
   copied: number;
 
-  // TODO проверка массива
   @IsArray()
   offers: Offer[];
 }

@@ -136,6 +136,8 @@ export class WishesService {
     };
 
     await this.createWish(createWishDto, user.id);
+
+    // т.к. по заданию нет условия копирования подарка, юзер может хотеть 2 одинаковых :-D
     await this.wishRepository.increment({ id }, "copied", 1);
   }
 }
