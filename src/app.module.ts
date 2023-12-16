@@ -8,6 +8,9 @@ import { OffersModule } from "./offers/offers.module";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { AuthModule } from "./auth/auth.module";
 
+const { POSTGRES_PASSWORD, POSTGRES_DB, POSTGRES_USER, POSTGRES_HOST } =
+  process.env;
+
 @Module({
   imports: [
     UsersModule,
@@ -17,11 +20,11 @@ import { AuthModule } from "./auth/auth.module";
     AuthModule,
     TypeOrmModule.forRoot({
       type: "postgres",
-      host: "127.0.0.1",
+      host: POSTGRES_HOST,
       port: 5432,
-      username: "student",
-      password: "student",
-      database: "nest_project",
+      username: POSTGRES_USER,
+      password: POSTGRES_PASSWORD,
+      database: POSTGRES_DB,
       entities: ["dist/*/entities/*.entity.js"],
       schema: "nest_project",
       synchronize: true,
